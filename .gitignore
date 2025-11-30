@@ -1,0 +1,54 @@
+# ---- Python cache ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# ---- Virtual environment ----
+venv/
+env/
+.env/
+
+# ---- Mac OS files ----
+.DS_Store
+
+# ---- VS Code settings ----
+.vscode/
+*.code-workspace
+
+# ---- Logs ----
+*.log
+
+# ---- Python build / dist ----
+build/
+dist/
+*.egg-info/
+
+# ---- Unit test / coverage ----
+coverage/
+htmlcov/
+.tox/
+pytest_cache/
+
+# ---- Bytecode ----
+*$py.class
+
+# ---- Temporary files ----
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# ---- Personal environment config ----
+*.env
+.env.*
+
+# ---- Project specific ----
+# If you generate monitoring logs or output files:
+output/
+logs/
+
+# If you create json output, you can ignore it:
+*.json
+
