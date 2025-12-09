@@ -1,5 +1,8 @@
-# proj1
-Built a lightweight, Python-based system monitoring tool capable of collecting real-time CPU usage, memory usage, process information, and network details using Linux system internals and psutil.
+# projA
+
+Final Goal for Project A
+
+A Python REST API that exposes system metrics (CPU, memory, disk, processes), packaged as a Docker image, and deployed as a Kubernetes Deployment + Service.
 
 Later we can add:
 
@@ -9,8 +12,8 @@ Maybe Prometheus scraping & Grafana dashboards
 
 But for now: basic monitoring app on K8s.
 
-🧩 Phase 1: Turn Your Collectors into an HTTP API (FastAPI)
-
+** Phase 1: Turn Your Collectors into an HTTP API (FastAPI)
+**
 Right now you have:
 
 collectors/system_info.py → get_system_metric() + get_disk_usage()
@@ -19,13 +22,13 @@ A main.py that just prints
 
 We’ll change it to a FastAPI app.
 
-1️⃣ Install FastAPI & Uvicorn (once)
+1. Install FastAPI & Uvicorn (once)
 
 In your venv / system:
 
 pip install fastapi uvicorn
 
-2️⃣ Create api/app.py
+2️ Create api/app.py
 
 Inside your project (projectA/), create a folder api if not there:
 
@@ -51,13 +54,13 @@ def read_disk_metrics():
 def read_root():
     return {"status": "ok", "message": "System Monitoring API is running"}
 
-3️⃣ Update main.py to run the API (for local dev)
+3️ Update main.py to run the API (for local dev)
 import uvicorn
 
 if __name__ == "__main__":
     uvicorn.run("api.app:app", host="0.0.0.0", port=8000, reload=True)
 
-4️⃣ Run it locally
+4️ Run it locally
 
 From project root:
 
@@ -74,7 +77,7 @@ http://localhost:8000/metrics/disk
 
 If you see JSON → you now have a proper monitoring API 🎉
 
-🐳 Phase 2: Dockerize the Monitoring App
+ Phase 2: Dockerize the Monitoring App
 
 Once the API works, we’ll create a Dockerfile like:
 
@@ -102,7 +105,7 @@ Then:
 docker build -t system-monitor:latest .
 docker run -p 8000:8000 system-monitor:latest
 
-☸️ Phase 3: Kubernetes Deployment + Service
+ Phase 3: Kubernetes Deployment + Service
 
 Later, we’ll add a k8s/ folder with:
 
@@ -135,4 +138,3 @@ spec:
 
 And a Service for it.
 
-We’ll do this once your Docker image is ready.
