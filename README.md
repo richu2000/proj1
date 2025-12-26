@@ -1,140 +1,112 @@
-# projA
+# System Monitoring Application (Python, Docker, Kubernetes)
 
-Final Goal for Project A
+A simple system monitoring service built with **Python** that exposes **CPU, memory, and disk metrics** via REST APIs.  
+The application is containerized using **Docker** and deployed on **Kubernetes** using a Deployment and Service.
 
-A Python REST API that exposes system metrics (CPU, memory, disk, processes), packaged as a Docker image, and deployed as a Kubernetes Deployment + Service.
+This project demonstrates end-to-end skills in **backend development, containerization, and Kubernetes deployment**.
 
-Later we can add:
+---
 
-K8s CronJob to periodically scrape & store metrics
+## Features
 
-Maybe Prometheus scraping & Grafana dashboards
+- REST APIs to fetch:
+  - CPU usage
+  - Memory usage
+  - Disk usage
+- Built using FastAPI
+- Dockerized application
+- Deployed on Kubernetes (Minikube)
+- Accessible via Kubernetes Service (NodePort)
 
-But for now: basic monitoring app on K8s.
+---
 
-** Phase 1: Turn Your Collectors into an HTTP API (FastAPI)
-**
-Right now you have:
+## Architecture Overview
 
-collectors/system_info.py → get_system_metric() + get_disk_usage()
+The application is built as a simple monitoring service and deployed using container and orchestration tools.
 
-A main.py that just prints
+- The FastAPI application exposes REST APIs to return system metrics such as CPU, memory, and disk usage.
+- The psutil library is used to collect system-level metrics from the running environment.
+- The application is packaged into a Docker image to ensure consistency across environments.
+- A Kubernetes Deployment runs the container as a Pod inside the cluster.
+- A Kubernetes Service (NodePort) exposes the application so it can be accessed from outside the cluster.
 
-We’ll change it to a FastAPI app.
+This setup demonstrates how a backend service can be containerized and deployed on Kubernetes.
 
-1. Install FastAPI & Uvicorn (once)
+---
 
-In your venv / system:
+## API Endpoints
 
-pip install fastapi uvicorn
+| Endpoint | Description |
+|--------|------------|
+| `/` | Health check |
+| `/metrics/system` | CPU and memory metrics |
+| `/metrics/disk` | Disk usage metrics |
 
-2️ Create api/app.py
+---
 
-Inside your project (projectA/), create a folder api if not there:
+## Run Locally (Python)
 
-mkdir -p api
+### Prerequisites
+- Python 3.11 or later
+- pip
+
+### Steps
+
+Install dependencies:
+```bash
+pip install fastapi uvicorn psutil
 
 
-Create file: api/app.py:
-
-from fastapi import FastAPI
-from collectors.system_info import get_system_metric, get_disk_usage
-
-app = FastAPI(title="System Monitoring API")
-
-@app.get("/metrics/system")
-def read_system_metrics():
-    return get_system_metric()
-
-@app.get("/metrics/disk")
-def read_disk_metrics():
-    return get_disk_usage("/")
-
-@app.get("/")
-def read_root():
-    return {"status": "ok", "message": "System Monitoring API is running"}
-
-3️ Update main.py to run the API (for local dev)
-import uvicorn
-
-if __name__ == "__main__":
-    uvicorn.run("api.app:app", host="0.0.0.0", port=8000, reload=True)
-
-4️ Run it locally
-
-From project root:
+###Run the application:
 
 python main.py
 
+###Access the API
 
-Then open in browser:
-
-http://localhost:8000/ → health
+http://localhost:8000/
 
 http://localhost:8000/metrics/system
 
 http://localhost:8000/metrics/disk
 
-If you see JSON → you now have a proper monitoring API 🎉
+###Run with Docker
 
- Phase 2: Dockerize the Monitoring App
+Prerequisites
 
-Once the API works, we’ll create a Dockerfile like:
+Docker installed and running
 
-FROM python:3.11-slim
+###Build Docker Image
+docker build -t system-monitor .
 
-WORKDIR /app
+###Run Docker Container
+docker run -p 8000:8000 system-monitor
 
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+Access the API
 
-COPY . /app
+http://localhost:8000/
 
-CMD ["python", "main.py"]
+http://localhost:8000/metrics/system
 
+http://localhost:8000/metrics/disk
 
-And a simple requirements.txt:
+Deploy on Kubernetes (Minikube)
+Start Minikube Cluster
+minikube start
 
-fastapi
-uvicorn
-psutil
+Load Docker Image into Minikube
+minikube image load system-monitor
 
+Apply Kubernetes Manifests
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
 
-Then:
+Verify Resources
+kubectl get pods
+kubectl get svc
 
-docker build -t system-monitor:latest .
-docker run -p 8000:8000 system-monitor:latest
+Access Application
+minikube service system-monitor
 
- Phase 3: Kubernetes Deployment + Service
+Or get the URL:
 
-Later, we’ll add a k8s/ folder with:
-
-deployment.yaml – runs your container
-
-service.yaml – exposes it inside cluster or via NodePort/Ingress
-
-Example (high level):
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: system-monitor
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: system-monitor
-  template:
-    metadata:
-      labels:
-        app: system-monitor
-    spec:
-      containers:
-      - name: system-monitor
-        image: your-docker-image:tag
-        ports:
-        - containerPort: 8000
-
-
-And a Service for it.
-
+minikube service system-monitor --url
