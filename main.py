@@ -1,10 +1,5 @@
-from collectors.system_info import get_system_metric
-from collectors.process_info import get_top_process
 
+import uvicorn
 
-if __name__=="__main__":
-    print("running proj : ")
-    print(get_system_metric())
-    print("Top processes: ")
-    print(get_top_process())
-    
+if __name__ == "__main__":
+    uvicorn.run("api.app:app", host="0.0.0.0", port=8000, reload=True)
